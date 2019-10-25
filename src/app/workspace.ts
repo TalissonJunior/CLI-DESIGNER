@@ -6,6 +6,7 @@ import * as d3 from 'd3';
  */
 export class WorkSpace {
   self: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
+  svg: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
   menu: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
 
   constructor(container: string) {
@@ -15,10 +16,10 @@ export class WorkSpace {
   }
 
   createWorkSpace(): void {
-    this.self.append('xhtml:div').attrs({
-      class: 'workspace ps',
-      height: '2400px',
-      width: '3840px'
+    this.svg = this.self.append('svg').attrs({
+      class: 'workspace',
+      height: 2400,
+      width: 3840
     });
   }
 
