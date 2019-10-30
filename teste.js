@@ -7,132 +7,81 @@ d3.demo.canvas = function () {
 
     var width = 500,
         height = 500,
-        zoomEnabled = true,
-        dragEnabled = true,
-        scale = 1,
-        translation = [0, 0],
         base = null,
-        wrapperBorder = 2,
+        wrapperBorder = 0,
         minimap = null,
-        minimapPadding = 20,
+        minimapPadding = 10,
         minimapScale = 0.25;
 
     function canvas(selection) {
 
         base = selection;
 
-        var xScale = d3.scale.linear()
-            .domain([-width / 2, width / 2])
-            .range([0, width]);
-
-        var yScale = d3.scale.linear()
-            .domain([-height / 2, height / 2])
-            .range([height, 0]);
-
-        var zoomHandler = function (newScale) {
-            if (!zoomEnabled) { return; }
-            if (d3.event) {
-                scale = d3.event.scale;
-            } else {
-                scale = newScale;
-            }
-            if (dragEnabled) {
-                var tbound = -height * scale,
-                    bbound = height * scale,
-                    lbound = -width * scale,
-                    rbound = width * scale;
-                // limit translation to thresholds
-                translation = d3.event ? d3.event.translate : [0, 0];
-                translation = [
-                    Math.max(Math.min(translation[0], rbound), lbound),
-                    Math.max(Math.min(translation[1], bbound), tbound)
-                ];
-            }
-
-            d3.select(".panCanvas, .panCanvas .bg")
-                .attr("transform", "translate(" + translation + ")" + " scale(" + scale + ")");
-
-            minimap.scale(scale).render();
-        }; // startoff zoomed in a bit to show pan/zoom rectangle
-
-        var zoom = d3.behavior.zoom()
-            .x(xScale)
-            .y(yScale)
-            .scaleExtent([0.5, 5])
-            .on("zoom.canvas", zoomHandler);
-
+        var svgWidth = (width + (wrapperBorder * 2) + minimapPadding * 2 + (width * minimapScale));
+        var svgHeight = (height + (wrapperBorder * 2) + minimapPadding * 2);
         var svg = selection.append("svg")
             .attr("class", "svg canvas")
-            .attr("width", width + (wrapperBorder * 2) + minimapPadding * 2 + (width * minimapScale))
-            .attr("height", height + (wrapperBorder * 2) + minimapPadding * 2)
+            .attr("width", svgWidth)
+            .attr("height", svgHeight)
             .attr("shape-rendering", "auto");
 
         var svgDefs = svg.append("defs");
-
         svgDefs.append("clipPath")
-            .attr("id", "wrapperClipPath")
+            .attr("id", "wrapperClipPath_qwpyza")
             .attr("class", "wrapper clipPath")
             .append("rect")
             .attr("class", "background")
             .attr("width", width)
             .attr("height", height);
-
         svgDefs.append("clipPath")
-            .attr("id", "minimapClipPath")
+            .attr("id", "minimapClipPath_qwpyza")
             .attr("class", "minimap clipPath")
             .attr("width", width)
             .attr("height", height)
-            //.attr("transform", "translate(" + (width + minimapPadding) + "," + (minimapPadding/2) + ")")
             .append("rect")
             .attr("class", "background")
             .attr("width", width)
             .attr("height", height);
 
         var filter = svgDefs.append("svg:filter")
-            .attr("id", "minimapDropShadow")
+            .attr("id", "minimapDropShadow_qwpyza")
             .attr("x", "-20%")
             .attr("y", "-20%")
             .attr("width", "150%")
             .attr("height", "150%");
-
         filter.append("svg:feOffset")
             .attr("result", "offOut")
             .attr("in", "SourceGraphic")
             .attr("dx", "1")
             .attr("dy", "1");
-
         filter.append("svg:feColorMatrix")
             .attr("result", "matrixOut")
             .attr("in", "offOut")
             .attr("type", "matrix")
             .attr("values", "0.1 0 0 0 0 0 0.1 0 0 0 0 0 0.1 0 0 0 0 0 0.5 0");
-
         filter.append("svg:feGaussianBlur")
             .attr("result", "blurOut")
             .attr("in", "matrixOut")
             .attr("stdDeviation", "10");
-
         filter.append("svg:feBlend")
             .attr("in", "SourceGraphic")
             .attr("in2", "blurOut")
             .attr("mode", "normal");
 
         var minimapRadialFill = svgDefs.append("radialGradient")
-            .attr({
-                id: "minimapGradient",
-                gradientUnits: "userSpaceOnUse",
-                cx: "500",
-                cy: "500",
-                r: "400",
-                fx: "500",
-                fy: "500"
-            });
+            .attr('id', "minimapGradient")
+            .attr('gradientUnits', "userSpaceOnUse")
+            .attr('cx', "500")
+            .attr('cy', "500")
+            .attr('r', "400")
+            .attr('fx', "500")
+            .attr('fy', "500");
         minimapRadialFill.append("stop")
             .attr("offset", "0%")
             .attr("stop-color", "#FFFFFF");
         minimapRadialFill.append("stop")
             .attr("offset", "40%")
-            .attr("stop-color", "#EEEEEE");
+            .attr("stop-color", "#EEEEEE")
         minimapRadialFill.append("stop")
             .attr("offset", "100%")
             .attr("stop-color", "#E0E0E0");
@@ -140,7 +89,6 @@ d3.demo.canvas = function () {
         var outerWrapper = svg.append("g")
             .attr("class", "wrapper outer")
             .attr("transform", "translate(0, " + minimapPadding + ")");
-
         outerWrapper.append("rect")
             .attr("class", "background")
             .attr("width", width + wrapperBorder * 2)
@@ -148,9 +96,8 @@ d3.demo.canvas = function () {
 
         var innerWrapper = outerWrapper.append("g")
             .attr("class", "wrapper inner")
-            .attr("clip-path", "url(#wrapperClipPath)")
-            .attr("transform", "translate(" + (wrapperBorder) + "," + (wrapperBorder) + ")")
-            .call(zoom);
+            .attr("clip-path", "url(#wrapperClipPath_qwpyza)")
+            .attr("transform", "translate(" + (wrapperBorder) + "," + (wrapperBorder) + ")");
 
         innerWrapper.append("rect")
             .attr("class", "background")
@@ -168,18 +115,45 @@ d3.demo.canvas = function () {
             .attr("width", width)
             .attr("height", height);
 
+        var zoom = d3.zoom()
+            .scaleExtent([0.5, 5]);
+
+        // updates the zoom boundaries based on the current size and scale
+        var updateCanvasZoomExtents = function () {
+            var scale = innerWrapper.property("__zoom").k;
+            var targetWidth = svgWidth;
+            var targetHeight = svgHeight;
+            var viewportWidth = width;
+            var viewportHeight = height;
+            zoom.translateExtent([
+                [-viewportWidth / scale, -viewportHeight / scale],
+                [(viewportWidth / scale + targetWidth), (viewportHeight / scale + targetHeight)]
+            ]);
+        };
+
+        var zoomHandler = function () {
+            panCanvas.attr("transform", d3.event.transform);
+            // here we filter out the emitting of events that originated outside of the normal ZoomBehavior; this prevents an infinite loop
+            // between the host and the minimap
+            if (d3.event.sourceEvent instanceof MouseEvent || d3.event.sourceEvent instanceof WheelEvent) {
+                minimap.update(d3.event.transform);
+            }
+            updateCanvasZoomExtents();
+        };
+
+        zoom.on("zoom", zoomHandler);
+
+        innerWrapper.call(zoom);
+
+        // initialize the minimap, passing needed references
         minimap = d3.demo.minimap()
-            .zoom(zoom)
+            .host(canvas)
             .target(panCanvas)
             .minimapScale(minimapScale)
             .x(width + minimapPadding)
             .y(minimapPadding);
 
         svg.call(minimap);
-
-        // startoff zoomed in a bit to show pan/zoom rectangle
-        zoom.scale(1.75);
-        zoomHandler(1.75);
 
         /** ADD SHAPE **/
         canvas.addItem = function (item) {
@@ -222,34 +196,30 @@ d3.demo.canvas = function () {
                 .render();
         };
 
-        canvas.zoomEnabled = function (isEnabled) {
-            if (!arguments.length) { return zoomEnabled }
-            zoomEnabled = isEnabled;
-        };
-
-        canvas.dragEnabled = function (isEnabled) {
-            if (!arguments.length) { return dragEnabled }
-            dragEnabled = isEnabled;
-        };
-
         canvas.reset = function () {
-            d3.transition().duration(750).tween("zoom", function () {
-                var ix = d3.interpolate(xScale.domain(), [-width / 2, width / 2]),
-                    iy = d3.interpolate(yScale.domain(), [-height / 2, height / 2]),
-                    iz = d3.interpolate(scale, 1);
-                return function (t) {
-                    zoom.scale(iz(t)).x(x.domain(ix(t))).y(y.domain(iy(t)));
-                    zoomed(iz(t));
-                };
-            });
+            //svg.call(zoom.event);
+            //svg.transition().duration(750).call(zoom.event);
+            zoom.transform(panCanvas, d3.zoomIdentity);
+            svg.property("__zoom", d3.zoomIdentity);
+            minimap.update(d3.zoomIdentity);
         };
+
+        canvas.update = function (minimapZoomTransform) {
+            zoom.transform(panCanvas, minimapZoomTransform);
+            // update the '__zoom' property with the new transform on the rootGroup which is where the zoomBehavior stores it since it was the
+            // call target during initialization
+            innerWrapper.property("__zoom", minimapZoomTransform);
+
+            updateCanvasZoomExtents();
+        };
+
+        updateCanvasZoomExtents();
     }
 
 
     //============================================================
     // Accessors
     //============================================================
-
 
     canvas.width = function (value) {
         if (!arguments.length) return width;
@@ -263,15 +233,8 @@ d3.demo.canvas = function () {
         return this;
     };
 
-    canvas.scale = function (value) {
-        if (!arguments.length) { return scale; }
-        scale = value;
-        return this;
-    };
-
     return canvas;
 };
-
 
 
 
@@ -281,29 +244,55 @@ d3.demo.minimap = function () {
     "use strict";
 
     var minimapScale = 0.15,
-        scale = 1,
-        zoom = null,
+        host = null,
         base = null,
         target = null,
         width = 0,
         height = 0,
         x = 0,
-        y = 0,
-        frameX = 0,
-        frameY = 0;
+        y = 0;
 
     function minimap(selection) {
 
         base = selection;
 
+        var zoom = d3.zoom()
+            .scaleExtent([0.5, 5]);
+
+        // updates the zoom boundaries based on the current size and scale
+        var updateMinimapZoomExtents = function () {
+            var scale = container.property("__zoom").k;
+            var targetWidth = parseInt(target.attr("width"));
+            var targetHeight = parseInt(target.attr("height"));
+            var viewportWidth = host.width();
+            var viewportHeight = host.height();
+            zoom.translateExtent([
+                [-viewportWidth / scale, -viewportHeight / scale],
+                [(viewportWidth / scale + targetWidth), (viewportHeight / scale + targetHeight)]
+            ]);
+        };
+
+        var zoomHandler = function () {
+            frame.attr("transform", d3.event.transform);
+            // here we filter out the emitting of events that originated outside of the normal ZoomBehavior; this prevents an infinite loop
+            // between the host and the minimap
+            if (d3.event.sourceEvent instanceof MouseEvent || d3.event.sourceEvent instanceof WheelEvent) {
+                // invert the outgoing transform and apply it to the host
+                var transform = d3.event.transform;
+                // ordering matters here! you have to scale() before you translate()
+                var modifiedTransform = d3.zoomIdentity.scale(1 / transform.k).translate(-transform.x, -transform.y);
+                host.update(modifiedTransform);
+            }
+
+            updateMinimapZoomExtents();
+        };
+
+        zoom.on("zoom", zoomHandler);
+
         var container = selection.append("g")
-            .attr("class", "minimap")
-            .call(zoom);
+            .attr("class", "minimap");
 
-        zoom.on("zoom.minimap", function () {
-            scale = d3.event.scale;
-        });
-
+        container.call(zoom);
 
         minimap.node = container.node();
 
@@ -314,42 +303,39 @@ d3.demo.minimap = function () {
             .attr("class", "background")
             .attr("width", width)
             .attr("height", height)
-            .attr("filter", "url(#minimapDropShadow)");
+            .attr("filter", "url(#minimapDropShadow_qPWKOg)");
 
-        var drag = d3.behavior.drag()
-            .on("dragstart.minimap", function () {
-                var frameTranslate = d3.demo.util.getXYFromTranslate(frame.attr("transform"));
-                frameX = frameTranslate[0];
-                frameY = frameTranslate[1];
-            })
-            .on("drag.minimap", function () {
-                d3.event.sourceEvent.stopImmediatePropagation();
-                frameX += d3.event.dx;
-                frameY += d3.event.dy;
-                frame.attr("transform", "translate(" + frameX + "," + frameY + ")");
-                var translate = [(-frameX * scale), (-frameY * scale)];
-                target.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-                zoom.translate(translate);
-            });
 
-        frame.call(drag);
+        minimap.update = function (hostTransform) {
+            // invert the incoming zoomTransform; ordering matters here! you have to scale() before you translate()
+            var modifiedTransform = d3.zoomIdentity.scale((1 / hostTransform.k)).translate(-hostTransform.x, -hostTransform.y);
+            // call this.zoom.transform which will reuse the handleZoom method below
+            zoom.transform(frame, modifiedTransform);
+            // update the new transform onto the minimapCanvas which is where the zoomBehavior stores it since it was the call target during initialization
+            container.property("__zoom", modifiedTransform);
+
+            updateMinimapZoomExtents();
+        };
+
 
         /** RENDER **/
         minimap.render = function () {
-            scale = zoom.scale();
+            // update the placement of the minimap
             container.attr("transform", "translate(" + x + "," + y + ")scale(" + minimapScale + ")");
+            // update the visualization being shown by the minimap in case its appearance has changed
             var node = target.node().cloneNode(true);
             node.removeAttribute("id");
             base.selectAll(".minimap .panCanvas").remove();
-            minimap.node.appendChild(node);
-            var targetTransform = d3.demo.util.getXYFromTranslate(target.attr("transform"));
-            frame.attr("transform", "translate(" + (-targetTransform[0] / scale) + "," + (-targetTransform[1] / scale) + ")")
-                .select(".background")
-                .attr("width", width / scale)
-                .attr("height", height / scale);
+            minimap.node.appendChild(node); // minimap node is the container's node
+            d3.select(node).attr("transform", "translate(0,0)");
+            // keep the minimap's viewport (frame) sized to match the current visualization viewport dimensions
+            frame.select(".background")
+                .attr("width", width)
+                .attr("height", height);
             frame.node().parentNode.appendChild(frame.node());
-            d3.select(node).attr("transform", "translate(1,1)");
         };
+
+        updateMinimapZoomExtents();
     }
 
 
@@ -386,23 +372,16 @@ d3.demo.minimap = function () {
     };
 
 
-    minimap.scale = function (value) {
-        if (!arguments.length) { return scale; }
-        scale = value;
+    minimap.host = function (value) {
+        if (!arguments.length) { return host; }
+        host = value;
         return this;
-    };
+    }
 
 
     minimap.minimapScale = function (value) {
         if (!arguments.length) { return minimapScale; }
         minimapScale = value;
-        return this;
-    };
-
-
-    minimap.zoom = function (value) {
-        if (!arguments.length) return zoom;
-        zoom = value;
         return this;
     };
 
@@ -418,34 +397,19 @@ d3.demo.minimap = function () {
     return minimap;
 };
 
-
-
-
-/** UTILS **/
-d3.demo.util = {};
-d3.demo.util.getXYFromTranslate = function (translateString) {
-    var split = translateString.split(",");
-    var x = split[0] ? ~~split[0].split("(")[1] : 0;
-    var y = split[1] ? ~~split[1].split(")")[0] : 0;
-    return [x, y];
-};
-
-
 /** RUN SCRIPT **/
 var canvasWidth = 800;
-var shapes = [];
-var lastXY = 1;
-var zoomEnabled = true;
-var dragEnabled = true;
 
 var canvas = d3.demo.canvas().width(435).height(400);
-d3.select("#canvas").call(canvas);
+d3.select("#canvasqPWKOg").call(canvas);
 
-d3.select("#resetButton").on("click", function () {
-    modeler.reset();
+d3.select("#resetButtonqPWKOg").on("click", function () {
+    canvas.reset();
 });
 
-d3.xml("http://www.billdwhite.com/wordpress/wp-content/images/butterfly.svg", "image/svg+xml", function (xml) {
+//d3.xml("https://upload.wikimedia.org/wikipedia/en/1/15/Logo_D3.svg",function(error, xml) {
+d3.xml("https://gist.githubusercontent.com/billdwhite/496a140e7ab26cef02635449b3563e54/raw/50a49bfbcafbe1005cba39a118e8b609c4d4ca29/butterfly.svg", function (error, xml) {
+    if (error) throw error;
     addItem(xml.documentElement);
 });
 
