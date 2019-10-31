@@ -52,10 +52,6 @@ export class Minimap {
         this.options.heigth - this.windowHeight() / this.options.scale
       );
 
-      console.log(
-        this.options.heigth - this.windowHeight() / this.options.scale
-      );
-
       // Validate bounds
       // LEFT
       // If x is positive and is on the left bound then allow user to move on y and x

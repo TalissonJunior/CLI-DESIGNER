@@ -47,7 +47,7 @@ export class ClassTable {
       throw Error('Invalid Property name.');
     }
 
-    this._name = name;
+    this._name = Utils.capitalize(name);
   }
 
   public changeTableName(tableName: string): void {
@@ -55,7 +55,7 @@ export class ClassTable {
       throw Error('Invalid Property tableName.');
     }
 
-    this._tableName = tableName;
+    this._tableName = Utils.convertToUnderscore(tableName);
   }
 
   public changePosition(position: ClassTablePosition): void {
@@ -93,10 +93,6 @@ export class ClassTable {
       return 'className / tableName';
     }
 
-    return (
-      Utils.capitalize(this.name) +
-      ' / ' +
-      Utils.convertToUnderscore(this.tableName)
-    );
+    return this.name + ' / ' + this.tableName;
   }
 }

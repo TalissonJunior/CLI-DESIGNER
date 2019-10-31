@@ -1,7 +1,6 @@
 .class-table {
   position: absolute;
   min-width: 250px;
-  min-height: 300px;
   font-family: 'source_sans_proregular', sans-serif;
   font-size: 12px;
   background-color: #eee;
@@ -16,6 +15,59 @@
   -moz-box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.2);
   box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.2);
 
+  .edit {
+    cursor: pointer;
+  }
+
+  .class-table-form {
+    padding-top: 15px;
+    .class-table-form-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 0px;
+
+      label {
+        display: inline-block;
+        text-align: right;
+        color: #333;
+        font-weight: 400;
+        vertical-align: middle;
+        white-space: normal;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      input {
+        margin-left: 5px;
+        width: 100px;
+      }
+    }
+
+    .class-table-form-group-btn {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-top: 12px;
+
+      .btn {
+        width: auto;
+        padding: 3px;
+        margin-right: 2px;
+        margin-left: 2px;
+        cursor: pointer;
+
+        &.btn-save {
+          color: #336699;
+        }
+      }
+    }
+  }
+
   tr {
     &.caption {
       font-weight: bold;
@@ -29,6 +81,16 @@
       -ms-user-select: none;
       user-select: none;
       color: #333333;
+
+      &.open-form {
+        .class-table-name {
+          display: none;
+        }
+
+        .table-ops {
+          display: none;
+        }
+      }
     }
 
     th {
@@ -52,6 +114,29 @@
     th {
       border-bottom: 1px solid #bdbdbd;
       padding: 4px;
+    }
+  }
+
+  // body
+  tbody {
+    tr {
+      td {
+        min-width: 60px;
+        padding: 4px;
+
+        &:last-child {
+          border-right: 0px solid #bdbdbd;
+        }
+
+        .table-primary {
+          display: flex;
+          align-items: center;
+
+          span {
+            margin-right: 5px;
+          }
+        }
+      }
     }
   }
 
