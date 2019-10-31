@@ -20,5 +20,7 @@ export class WorkSpace {
         width: options.width,
         height: options.height
       });
+
+    this.svg.append('g').attr('transform', 'translate(0,0)');
   }
 }

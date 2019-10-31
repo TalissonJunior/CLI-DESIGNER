@@ -19,9 +19,10 @@ class App {
       width: this.width
     });
 
-    this.minimap = new Minimap(this.workspace, {
+    this.minimap = new Minimap(container, this.workspace, {
       heigth: this.height / 16,
-      width: this.width / 16
+      width: this.width / 16,
+      scale: 16
     });
   }
 }
