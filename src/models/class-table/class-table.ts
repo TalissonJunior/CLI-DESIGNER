@@ -87,4 +87,16 @@ export class ClassTable {
       this._properties.splice(propertyIndex);
     }
   }
+
+  public getClassTableName(): string {
+    if (!this.name && !this.tableName) {
+      return 'className / tableName';
+    }
+
+    return (
+      Utils.capitalize(this.name) +
+      ' / ' +
+      Utils.convertToUnderscore(this.tableName)
+    );
+  }
 }

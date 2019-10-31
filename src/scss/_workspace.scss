@@ -3,4 +3,8 @@
   padding: 0px;
   overflow: hidden;
   user-select: none;
+
+  foreignObject {
+    overflow: visible;
+  }
 }

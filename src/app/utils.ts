@@ -25,7 +25,11 @@ export class Utils {
     return filterSpace;
   }
 
-  public static convertToBoolean(value: any): boolean {
+  static capitalize(s: string): string {
+    return s[0].toUpperCase() + s.slice(1);
+  }
+
+  static convertToBoolean(value: any): boolean {
     return /true/i.test(value);
   }
 }
