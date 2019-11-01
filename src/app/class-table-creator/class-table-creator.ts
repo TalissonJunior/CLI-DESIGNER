@@ -7,15 +7,17 @@ import * as d3 from 'd3';
 import { CSharpTypes } from '../../data/csharptypes';
 import { ClassTablePropertyType } from '../../models/class-table/class-table-property-type';
 import { Toast } from '../toast';
+import { Drag } from '../drag';
 
 /**
  * Creates the class table element,
  * Has all the rules for class table
  */
 export class ClassTableCreator {
-  classtable: ClassTable;
+  classTable: ClassTable;
   columns: Array<any>;
   selfElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
+  containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
 
   constructor(
     containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
@@ -24,12 +26,35 @@ export class ClassTableCreator {
     this.init(containerElement, classTable);
   }
 
+  update(): void {
+    if (this.selfElement) {
+      this.selfElement.remove();
+    }
+
+    this.selfElement = this.containerElement
+      .append('foreignObject')
+      .attrs({
+        x: 100,
+        y: 80
+      })
+      .append('xhtml:table')
+      .attrs({
+        class: 'class-table'
+      })
+      .raise();
+
+    this.createHeader(this.selfElement, this.classTable);
+    this.createBody(this.selfElement, this.classTable);
+    this.createFooter(this.selfElement);
+  }
+
   private init(
     containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
     classTable: ClassTable
   ) {
     // Set up
-    this.classtable = classTable;
+    this.classTable = classTable;
+    this.containerElement = containerElement;
 
     this.columns = [
       {
@@ -58,27 +83,14 @@ export class ClassTableCreator {
       }
     ];
 
-    this.selfElement = containerElement
-      .append('foreignObject')
-      .attrs({
-        x: 100,
-        y: 80
-      })
-      .append('xhtml:table')
-      .attrs({
-        class: 'class-table'
-      })
-      .raise();
-
-    this.createHeader(this.selfElement, classTable);
-    this.createBody(this.selfElement, classTable);
-    this.createFooter(this.selfElement);
+    this.update();
   }
 
   private createHeader(
     tableElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
     classTable: ClassTable
   ) {
+    const self = this;
     const headerTR = tableElement
       .append('thead')
       .append('tr')
@@ -123,6 +135,11 @@ export class ClassTableCreator {
           headerNode.classList.toggle('open-form');
 
           if (headerNode.classList.contains('open-form')) {
+            const formDataTableChanges = {
+              className: classTable.name,
+              tableName: classTable.tableName
+            };
+
             const form = headerTR.append('th').attrs({
               class: 'class-table-form',
               colspan: colspan
@@ -132,14 +149,20 @@ export class ClassTableCreator {
               form: form,
               initialValue: classTable.name,
               key: Utils.generateID(),
-              label: 'Class Name'
+              label: 'Class Name',
+              onValueChange: (value, element) => {
+                formDataTableChanges.className = value;
+              }
             });
 
             new ClassTableCreatorForm().createInput({
               form: form,
               initialValue: classTable.tableName,
               key: Utils.generateID(),
-              label: 'Table Name'
+              label: 'Table Name',
+              onValueChange: (value, element) => {
+                formDataTableChanges.tableName = value;
+              }
             });
 
             new ClassTableCreatorForm().createCancelSaveButton({
@@ -152,7 +175,24 @@ export class ClassTableCreator {
                 form.remove();
                 headerNode.classList.remove('open-form');
               },
-              saveButtonOnClick: () => {}
+              saveButtonOnClick: () => {
+                try {
+                  // Change table name and class values
+                  self.classTable.changeName(formDataTableChanges.className);
+
+                  self.classTable.changeTableName(
+                    formDataTableChanges.tableName
+                  );
+
+                  // Close form
+                  form.remove();
+                  headerTR.select('class-table-form').remove();
+
+                  self.update();
+                } catch (error) {
+                  new Toast().show(error.message);
+                }
+              }
             });
           } else {
             headerTR.select('class-table-form').remove();
@@ -168,10 +208,10 @@ export class ClassTableCreator {
     classTable: ClassTable
   ) {
     const self = this;
-    const bodyTR = tableElement.append('tbody');
+    const tbody = tableElement.append('tbody');
 
     // Create columns elements
-    bodyTR
+    tbody
       .append('tr')
       .attrs({
         class: 'property-header'
@@ -188,7 +228,7 @@ export class ClassTableCreator {
         return tooltip.node() as HTMLElement;
       });
 
-    bodyTR
+    tbody
       .selectAll('columns')
       .data(classTable.properties)
       .enter()
@@ -256,7 +296,7 @@ export class ClassTableCreator {
       });
 
     // Add listeners to edit properties
-    bodyTR
+    tbody
       .selectAll('.edit-property')
       .each(function() {
         return this;
@@ -265,7 +305,7 @@ export class ClassTableCreator {
         const currentEditElement = d3.select(this);
         const key = currentEditElement.attr('key');
 
-        const parentTr = bodyTR.select(`[key="${key}"]`);
+        const parentTr = tbody.select(`[key="${key}"]`);
 
         const property = classTable.properties.find(prop => prop.key == key);
         self.createFormProperty(parentTr, property);
@@ -310,11 +350,11 @@ export class ClassTableCreator {
           null,
           null,
           null,
-          new ClassTablePropertyType(null, false),
+          new ClassTablePropertyType('string', false),
           false,
           false,
-          false,
-          false
+          true,
+          true
         )
       );
     });
@@ -338,13 +378,16 @@ export class ClassTableCreator {
 
     const form = parentTr.append('td').attrs({
       class: 'property-form class-table-form',
-      colspan: 6
+      colspan: this.columns.length
     });
 
     new ClassTableCreatorForm().createInput({
       form: form,
       initialValue: property.name,
-      label: 'Property Name'
+      label: 'Property Name',
+      onValueChange: (value, element) => {
+        formDataChanges.name = value;
+      }
     });
 
     new ClassTableCreatorForm().createSelectInput({
@@ -359,7 +402,7 @@ export class ClassTableCreator {
           .text(value => value);
       },
       onValueChange: (value, element) => {
-        formDataChanges.name = value;
+        formDataChanges.type = new ClassTablePropertyType(value, false);
       }
     });
 
@@ -411,38 +454,43 @@ export class ClassTableCreator {
       },
       saveButtonOnClick: () => {
         try {
-          let propertyIndex = this.classtable.properties.findIndex(
+          let propertyIndex = this.classTable.properties.findIndex(
             prop => prop.key == property.key
           );
 
           // If didn´t found then add it to properties, because is creating a new property
           if (propertyIndex < 0) {
-            this.classtable.addProperty(property);
-            propertyIndex = this.classtable.properties.findIndex(
+            this.classTable.addProperty(property);
+            propertyIndex = this.classTable.properties.findIndex(
               prop => prop.key == property.key
             );
           }
 
           // Change property values
-          this.classtable.properties[propertyIndex].changeName(
+          this.classTable.properties[propertyIndex].changeName(
             formDataChanges.name
           );
-          this.classtable.properties[propertyIndex].changeColumnName(
+          this.classTable.properties[propertyIndex].changeColumnName(
             formDataChanges.columnName
           );
-          this.classtable.properties[propertyIndex].setIsPrimaryKey(
+          this.classTable.properties[propertyIndex].changeType(
+            formDataChanges.type
+          );
+          this.classTable.properties[propertyIndex].setIsPrimaryKey(
             formDataChanges.isPrimaryKey
           );
-          this.classtable.properties[propertyIndex].setIsRequired(
+          this.classTable.properties[propertyIndex].setIsRequired(
             formDataChanges.isRequired
           );
-          this.classtable.properties[propertyIndex].setHasChangeMethod(
+          this.classTable.properties[propertyIndex].setHasChangeMethod(
             formDataChanges.hasChangeMethod
           );
 
           // Close form
           form.remove();
           (parentTr.node() as HTMLElement).classList.remove('editing');
+
+          this.update();
         } catch (error) {
           new Toast().show(error.message);
         }

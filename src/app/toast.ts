@@ -25,9 +25,11 @@ export class Toast {
       .text(message);
 
     setTimeout(() => {
-      this.self.attrs({
-        class: 'toast'
-      });
+      this.self
+        .attrs({
+          class: 'toast'
+        })
+        .text('');
     }, timeout);
   }
 }

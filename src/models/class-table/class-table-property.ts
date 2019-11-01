@@ -80,7 +80,7 @@ export class ClassTableProperty {
 
   public changeColumnName(columnName: string): void {
     if (!columnName) {
-      throw Error('Property column Name can´t be null.');
+      throw Error('Property column name can´t be null.');
     }
 
     this._columnName = columnName;
@@ -107,8 +107,8 @@ export class ClassTableProperty {
   }
 
   public changeType(type: ClassTablePropertyType): void {
-    if (!type) {
-      throw Error('Property Type can´t be null.');
+    if (!type || !type.value) {
+      throw Error('Property Type can´t be null.git ');
     }
 
     this._type = new ClassTablePropertyType(type.value, type.isClass);

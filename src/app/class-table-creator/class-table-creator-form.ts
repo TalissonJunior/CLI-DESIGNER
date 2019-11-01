@@ -48,7 +48,7 @@ export class ClassTableCreatorForm {
 
     input.on('input', function() {
       if (checkboxForm.onValueChange) {
-        checkboxForm.onValueChange(this.value as any, this);
+        checkboxForm.onValueChange(this.checked, this);
       }
     });
   }

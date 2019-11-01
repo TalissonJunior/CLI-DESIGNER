@@ -44,7 +44,7 @@ export class ClassTable {
 
   public changeName(name: string): void {
     if (!name) {
-      throw Error('Invalid Property name.');
+      throw Error('Property class name can´t be null.');
     }
 
     this._name = Utils.capitalize(name);
@@ -52,7 +52,7 @@ export class ClassTable {
 
   public changeTableName(tableName: string): void {
     if (!tableName) {
-      throw Error('Invalid Property tableName.');
+      throw Error('Property Table Name can´t be null.');
     }
 
     this._tableName = Utils.convertToUnderscore(tableName);
@@ -60,7 +60,7 @@ export class ClassTable {
 
   public changePosition(position: ClassTablePosition): void {
     if (!position) {
-      throw Error('Invalid Property position.');
+      throw Error('Property position can´t be null.');
     }
 
     this._position = position;
@@ -68,7 +68,7 @@ export class ClassTable {
 
   public addProperty(property: ClassTableProperty): void {
     if (!property) {
-      throw Error('Invalid Property.');
+      throw Error('Class Property can´t be null.');
     }
 
     this._properties.push(property);
@@ -76,7 +76,7 @@ export class ClassTable {
 
   public removeProperty(propertyKey: string): void {
     if (!propertyKey) {
-      throw Error('Invalid Property Key.');
+      throw Error('Property Key can´t be null.');
     }
 
     var propertyIndex = this._properties.findIndex(
