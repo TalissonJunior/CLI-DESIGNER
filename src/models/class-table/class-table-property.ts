@@ -62,17 +62,17 @@ export class ClassTableProperty {
     this._name = name || '';
     this._columnName = columnName || '';
     this._description = description || '';
-    this._isForeignKey = isForeignKey || false;
-    this._isPrimaryKey = isPrimaryKey || false;
-    this._isRequired = isRequired || true;
-    this._hasChangeMethod = hasChangeMethod || true;
+    this._isForeignKey = isForeignKey;
+    this._isPrimaryKey = isPrimaryKey;
+    this._isRequired = isRequired;
+    this._hasChangeMethod = hasChangeMethod;
 
     this.changeType(type);
   }
 
   public changeName(name: string): void {
     if (!name) {
-      throw Error('Invalid Property name.');
+      throw Error('Property name can´t be null.');
     }
 
     this._name = name;
@@ -80,7 +80,7 @@ export class ClassTableProperty {
 
   public changeColumnName(columnName: string): void {
     if (!columnName) {
-      throw Error('Invalid Property columnName.');
+      throw Error('Property column Name can´t be null.');
     }
 
     this._columnName = columnName;
@@ -108,7 +108,7 @@ export class ClassTableProperty {
 
   public changeType(type: ClassTablePropertyType): void {
     if (!type) {
-      throw Error('Invalid Property Type.');
+      throw Error('Property Type can´t be null.');
     }
 
     this._type = new ClassTablePropertyType(type.value, type.isClass);

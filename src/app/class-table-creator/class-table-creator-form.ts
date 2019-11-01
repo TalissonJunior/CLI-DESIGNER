@@ -1,4 +1,9 @@
-import { InputForm, CancelSaveButtonForm } from '../../models/class-table-form';
+import {
+  InputForm,
+  CancelSaveButtonForm,
+  SelectForm,
+  CheckboxForm
+} from '../../models/class-table-form';
 
 export class ClassTableCreatorForm {
   constructor() {}
@@ -22,6 +27,52 @@ export class ClassTableCreatorForm {
         inputForm.onValueChange(this.value, this);
       }
     });
+  }
+
+  createCheckboxInput(checkboxForm: CheckboxForm): void {
+    const formGroup = checkboxForm.form.append('div').attrs({
+      class: 'class-table-form-group'
+    });
+
+    const label = formGroup.append('label');
+    const input = formGroup.append('input');
+
+    label.text(checkboxForm.label);
+    input.attrs({
+      type: 'checkbox'
+    });
+
+    if (checkboxForm.initialValueChecked) {
+      input.attr('checked', true);
+    }
+
+    input.on('input', function() {
+      if (checkboxForm.onValueChange) {
+        checkboxForm.onValueChange(this.value as any, this);
+      }
+    });
+  }
+
+  createSelectInput(inputForm: SelectForm): void {
+    const formGroup = inputForm.form.append('div').attrs({
+      class: 'class-table-form-group'
+    });
+
+    const label = formGroup.append('label');
+    const select = formGroup.append('select');
+
+    label.text(inputForm.label);
+    const options = select.selectAll('options');
+
+    inputForm.options(options);
+
+    select.on('change', function() {
+      if (inputForm.onValueChange) {
+        inputForm.onValueChange(this.value, this);
+      }
+    });
+
+    select.node().value = inputForm.initialValue;
   }
 
   createCancelSaveButton(buttonsForm: CancelSaveButtonForm): void {

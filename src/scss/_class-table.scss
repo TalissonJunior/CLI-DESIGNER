@@ -20,7 +20,8 @@
   }
 
   .class-table-form {
-    padding-top: 15px;
+    background-color: $primary-light;
+    padding: 15px 8px;
     .class-table-form-group {
       display: flex;
       align-items: center;
@@ -40,11 +41,22 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+        min-width: 150px;
       }
 
       input {
         margin-left: 5px;
         width: 100px;
+
+        &[type='checkbox'] {
+          width: auto;
+          margin-right: 92px;
+        }
+      }
+
+      select {
+        margin-left: 5px;
+        width: 104px;
       }
     }
 
@@ -107,6 +119,16 @@
       padding: 0px;
       border-right-width: 0px;
     }
+
+    tr {
+      &.editing {
+        td {
+          &:not(.property-form) {
+            display: none;
+          }
+        }
+      }
+    }
   }
 
   // Header
@@ -137,6 +159,14 @@
           }
         }
       }
+
+      &.editing {
+        td {
+          &:not(.property-form) {
+            display: none;
+          }
+        }
+      }
     }
   }
 
@@ -151,9 +181,11 @@
 
     div {
       &.operations {
-        padding: 3px;
-        display: flex;
-        align-items: center;
+        .operations-action {
+          padding: 3px;
+          display: flex;
+          align-items: center;
+        }
       }
     }
   }
