@@ -18,12 +18,14 @@ export class ClassTableCreator {
   columns: Array<any>;
   selfElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
   containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
+  otherClassTable: Array<ClassTable>;
 
   constructor(
     containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
-    classTable: ClassTable
+    classTable: ClassTable,
+    otherClassTables: Array<ClassTable>
   ) {
-    this.init(containerElement, classTable);
+    this.init(containerElement, classTable, otherClassTables);
   }
 
   update(): void {
@@ -51,11 +53,13 @@ export class ClassTableCreator {
 
   private init(
     containerElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
-    classTable: ClassTable
-  ) {
+    classTable: ClassTable,
+    otherClassTables: Array<ClassTable>
+  ): void {
     // Set up
     this.classTable = classTable;
     this.containerElement = containerElement;
+    this.otherClassTable = otherClassTables;
 
     this.columns = [
       {
@@ -396,8 +400,12 @@ export class ClassTableCreator {
       initialValue: property.type.value,
       label: 'Type',
       options: selectOptions => {
+        var availableType = CSharpTypes.concat(
+          this.otherClassTable.map(ct => ct.name)
+        );
+
         selectOptions
-          .data(CSharpTypes)
+          .data(availableType)
           .enter()
           .append('option')
           .text(value => value);
