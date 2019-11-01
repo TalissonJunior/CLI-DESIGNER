@@ -4,6 +4,8 @@ export const CSharpTypes = [
   'long',
   'decimal',
   'bool',
+  'byte',
+  'sbyte',
   'byte[]',
   'char',
   'float',

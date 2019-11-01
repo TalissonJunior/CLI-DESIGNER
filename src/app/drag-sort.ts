@@ -2,7 +2,7 @@
  This is a component of my ReactJS project
  https://codepen.io/fitri/full/oWovYj/ */
 
-export class Drag {
+export class DragSort {
   constructor() {}
 
   enableDragSort(listClass) {

@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 import { CSharpTypes } from '../../data/csharptypes';
 import { ClassTablePropertyType } from '../../models/class-table/class-table-property-type';
 import { Toast } from '../toast';
-import { Drag } from '../drag';
+import { ClassTablePosition } from '../../models/class-table/class-table-position';
 
 /**
  * Creates the class table element,
@@ -34,8 +34,8 @@ export class ClassTableCreator {
     this.selfElement = this.containerElement
       .append('foreignObject')
       .attrs({
-        x: 100,
-        y: 80
+        x: this.classTable.position.x,
+        y: this.classTable.position.y
       })
       .append('xhtml:table')
       .attrs({
@@ -46,6 +46,7 @@ export class ClassTableCreator {
     this.createHeader(this.selfElement, this.classTable);
     this.createBody(this.selfElement, this.classTable);
     this.createFooter(this.selfElement);
+    this.bindDrag(this.selfElement);
   }
 
   private init(
@@ -496,5 +497,29 @@ export class ClassTableCreator {
         }
       }
     });
+  }
+
+  private bindDrag(
+    element: d3.Selection<d3.BaseType, unknown, HTMLElement, any>
+  ): void {
+    let x, y;
+    element = d3.select((element.node() as any).parentNode);
+
+    const drag = d3
+      .drag()
+      .on('start', () => {
+        x = parseInt(element.attr('x'));
+        y = parseInt(element.attr('y'));
+      })
+      .on('drag', () => {
+        x += d3.event.dx;
+        y += d3.event.dy;
+
+        element.attr('x', x).attr('y', y);
+
+        this.classTable.changePosition(new ClassTablePosition(x, y));
+      });
+
+    element.call(drag);
   }
 }
